@@ -2,7 +2,9 @@ package com.example.userRoleApp.roleApp.controller;
 
 
 import com.example.userRoleApp.roleApp.entity.UserEntity;
+import com.example.userRoleApp.roleApp.exeptions.UserAlreadyExistException;
 import com.example.userRoleApp.roleApp.repository.UserRepo;
+import com.example.userRoleApp.roleApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,17 +14,16 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     @Autowired
-    private  UserRepo userRepo;
+    private UserService userService;
 
     @PostMapping
     public ResponseEntity registration(@RequestBody UserEntity user){
         try {
-            if (userRepo.findByName(user.getName()) != null){
-                return ResponseEntity.badRequest().body("This user already exists");
-            }
-            userRepo.save(user);
+            userService.registration(user);
             return ResponseEntity.ok("user registered");
-        }catch (Exception e){
+        }catch (UserAlreadyExistException e){
+            return ResponseEntity.badRequest().body(e.getMessage());}
+        catch (Exception e){
             return ResponseEntity.badRequest().body("An error has occured");
         }
     }
