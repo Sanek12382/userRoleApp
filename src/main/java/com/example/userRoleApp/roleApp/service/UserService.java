@@ -9,6 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.ArrayList;
+
 @Service
 public class UserService {
     @Autowired
@@ -23,6 +26,16 @@ public class UserService {
     }
 
 
+    public UserEntity updateOne(UserEntity user) throws UserNotFoundException {
+
+        if (userRepo.findById(user.getId()).get() == null) {
+            throw new UserNotFoundException("User not found");
+        }
+        return userRepo.save(user);
+    }
+
+
+
     public UserEntity getOne(Long id) throws UserNotFoundException {
         UserEntity user = userRepo.findById(id).get();
         if (user == null) {
@@ -31,8 +44,15 @@ public class UserService {
         return user;
     }
 
+    public ArrayList<UserEntity> getAll() {
+        ArrayList<UserEntity> allUsers= (ArrayList<UserEntity>) userRepo.findAll();
+
+        return allUsers;
+    }
+
     public Long delete(Long id) {
         userRepo.deleteById(id);
+
         return id;
     }
 }

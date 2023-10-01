@@ -39,6 +39,28 @@ public class UserController {
         }
     }
 
+    @GetMapping("/all")
+    public ResponseEntity getAllUsers() {
+        try {
+            return ResponseEntity.ok(userService.getAll());
+        }
+         catch (Exception e) {
+            return ResponseEntity.badRequest().body("Произошла ошибка");
+        }
+    }
+
+    @PutMapping
+    public ResponseEntity updateOneUser(@RequestBody UserEntity user){
+        try {
+            userService.updateOne(user);
+            return ResponseEntity.ok("user updated");
+        }catch (UserNotFoundException e){
+            return ResponseEntity.badRequest().body(e.getMessage());}
+        catch (Exception e){
+            return ResponseEntity.badRequest().body("An error has occured");
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity deleteUser(@PathVariable Long id) {
         try {
