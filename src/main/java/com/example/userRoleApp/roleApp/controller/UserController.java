@@ -28,7 +28,7 @@ public class UserController {
             return ResponseEntity.badRequest().body("An error has occured");
         }
     }
-    @GetMapping()
+    @GetMapping
     public ResponseEntity getOneUser(@RequestParam Long id) {
         try {
             return ResponseEntity.ok(userService.getOne(id));
