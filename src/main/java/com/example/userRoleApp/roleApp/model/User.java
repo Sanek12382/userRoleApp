@@ -17,7 +17,7 @@ public class User {
         model.setId(entity.getId());
         model.setName(entity.getName());
         model.setEmail(entity.getEmail());
-        model.getAge(entity.getAge());
+        model.setAge(entity.getAge());
         return model;
     }
 
