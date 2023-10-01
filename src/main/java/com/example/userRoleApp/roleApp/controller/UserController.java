@@ -2,7 +2,10 @@ package com.example.userRoleApp.roleApp.controller;
 
 
 import com.example.userRoleApp.roleApp.entity.UserEntity;
+import com.example.userRoleApp.roleApp.exeptions.UserAlreadyExistException;
+import com.example.userRoleApp.roleApp.exeptions.UserNotFoundException;
 import com.example.userRoleApp.roleApp.repository.UserRepo;
+import com.example.userRoleApp.roleApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,26 +15,58 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     @Autowired
-    private  UserRepo userRepo;
+    private UserService userService;
 
     @PostMapping
     public ResponseEntity registration(@RequestBody UserEntity user){
         try {
-            if (userRepo.findByName(user.getName()) != null){
-                return ResponseEntity.badRequest().body("This user already exists");
-            }
-            userRepo.save(user);
+            userService.registration(user);
             return ResponseEntity.ok("user registered");
-        }catch (Exception e){
+        }catch (UserAlreadyExistException e){
+            return ResponseEntity.badRequest().body(e.getMessage());}
+        catch (Exception e){
             return ResponseEntity.badRequest().body("An error has occured");
         }
     }
-    @GetMapping()
-    public ResponseEntity getUsers()    {
+    @GetMapping
+    public ResponseEntity getOneUser(@RequestParam Long id) {
         try {
-            return  ResponseEntity.ok("server is up");
-        }catch (Exception e){
-            return ResponseEntity.badRequest().body("error getting all users");
+            return ResponseEntity.ok(userService.getOne(id));
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Произошла ошибка");
+        }
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity getAllUsers() {
+        try {
+            return ResponseEntity.ok(userService.getAll());
+        }
+         catch (Exception e) {
+            return ResponseEntity.badRequest().body("Произошла ошибка");
+        }
+    }
+
+    @PutMapping
+    public ResponseEntity updateOneUser(@RequestBody UserEntity user){
+        try {
+            userService.updateOne(user);
+            return ResponseEntity.ok("user updated");
+        }catch (UserNotFoundException e){
+            return ResponseEntity.badRequest().body(e.getMessage());}
+        catch (Exception e){
+            return ResponseEntity.badRequest().body("An error has occured");
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteUser(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(userService.delete(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Произошла ошибка");
         }
     }
 }
