@@ -3,6 +3,7 @@ package com.example.userRoleApp.roleApp.controller;
 
 import com.example.userRoleApp.roleApp.entity.UserEntity;
 import com.example.userRoleApp.roleApp.exeptions.UserAlreadyExistException;
+import com.example.userRoleApp.roleApp.exeptions.UserNotFoundException;
 import com.example.userRoleApp.roleApp.repository.UserRepo;
 import com.example.userRoleApp.roleApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +29,22 @@ public class UserController {
         }
     }
     @GetMapping()
-    public ResponseEntity getUsers()    {
+    public ResponseEntity getOneUser(@RequestParam Long id) {
         try {
-            return  ResponseEntity.ok("server is up");
-        }catch (Exception e){
-            return ResponseEntity.badRequest().body("error getting all users");
+            return ResponseEntity.ok(userService.getOne(id));
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Произошла ошибка");
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteUser(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(userService.delete(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Произошла ошибка");
         }
     }
 }
